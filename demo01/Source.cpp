@@ -6,6 +6,7 @@
 
 // add const pi as float
 
+// draw a circle by center, radius & segments
 void DrawCircle(float cx, float cy, float r, int num_segments)
 {
     glBegin(GL_LINE_LOOP);
@@ -17,7 +18,6 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
         float y = r * sinf(theta);//calculate the y component
 
         glVertex2f(x + cx, y + cy);//output vertex
-
     }
     glEnd();
 }
