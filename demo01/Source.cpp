@@ -26,12 +26,17 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
 void Draw() {
     glClear(GL_COLOR_BUFFER_BIT);
     // draw lines
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0.007843137254902, 0.6274509803921569, 0.7725490196078431);
     glBegin(GL_LINES);
-    //add lines
+    glVertex3f(200, 0, 0);
+    glVertex3f(-200, 0, 0);
+    glVertex3f(0, 200, 0);
+    glVertex3f(0, -200, 0);
+    glVertex3f(0, 0, 15);
+    glVertex3f(0, 0, 0);
     glEnd();
     // draw circles
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0.007843137254902, 0.6274509803921569, 0.7725490196078431);
     for (int j = 50; j < 201; j = j + 50)
     {
         DrawCircle(0.0, 0.0, j, 72);
