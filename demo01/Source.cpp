@@ -11,7 +11,7 @@ float T_SCAN = 4;
 int t = 0;
 float d_elev = 0;
 
-// öéåø ÷åéí
+// Drawing axes X and Y (north, south, east, west)
 void drawLines() {
     glLineWidth(3);
     glColor3f(0.007843137254902, 0.6274509803921569, 0.7725490196078431);
@@ -42,7 +42,7 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
     glEnd();
 }
 
-// öéåø òéâåìéí
+// Create all four circles using the DrawCircle function
 void drawCircles() {
     glColor3f(0.007843137254902, 0.6274509803921569, 0.7725490196078431);
     for (int j = 50; j < 201; j = j + 50)
@@ -51,7 +51,7 @@ void drawCircles() {
     }
 }
 
-// öéåø ÷øï ñøé÷ä
+// Drawing and creation Beam
 void drawBeam() {
     glColor3f(1.0, 1.0, 1.0); // change color
     glBegin(GL_LINES);
