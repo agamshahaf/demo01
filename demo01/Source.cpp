@@ -5,11 +5,12 @@
 #include <math.h>
 
 float PI = 3.1415926535897932384626433832795;
-float R_MAX = 200;
-float H_MAX = 50;
-float T_SCAN = 4;
-int t = 0;
-float d_elev = 0;
+float R_MAX = 200; // The longest radius
+float H_MAX = 50; // The height
+float T_SCAN = 4; // The time it takes for one scan (seconds)
+int t = 0; // The t of idle
+float d_elev = 0; // Scan angle
+int old_t;
 
 // Drawing axes X and Y (north, south, east, west)
 void drawLines() {
@@ -89,22 +90,22 @@ void Draw() {
 
 void SpecialKeys(int key, int x, int y) {
     if (key == GLUT_KEY_UP) {
-        if (d_elev == 80) {
+        if (d_elev == 78) {
             d_elev = 0;
         }
         else {
-            if (d_elev > 80) {
-                d_elev -= 1;
+            if (d_elev > 78) {
+                d_elev -=0.5;
             }
         }
     }
     if (key == GLUT_KEY_DOWN) {
         if (d_elev == 0) {
-            d_elev = 80;
+            d_elev = 78;
         }
         else {
             if (d_elev < 90) {
-                d_elev += 1;
+                d_elev += 0.5;
             }
         }
     }
@@ -112,6 +113,14 @@ void SpecialKeys(int key, int x, int y) {
 }
 
 void idle() {
+    int dt = 0;
+    int new_t;
+    while (dt < 10) {
+        new_t = glutGet(GLUT_ELAPSED_TIME);
+        dt = (new_t - old_t);
+        //        printf("new_t =%d \n", new_t);
+    }
+    old_t = new_t;
     if (t < 100 * T_SCAN)
         t += 1;
     else
@@ -120,6 +129,7 @@ void idle() {
 }
 
 void Initialize() {
+    old_t = glutGet(GLUT_ELAPSED_TIME);
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
