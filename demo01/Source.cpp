@@ -9,8 +9,10 @@ float R_MAX = 200; // The longest radius
 float H_MAX = 50; // The height
 float T_SCAN = 4; // The time it takes for one scan (seconds)
 int t = 0; // The t of idle
-float d_elev = 0; // Scan angle
+float d_elev = 0; // elev view angle
+float d_hor_view = 0; // horizontal view angle
 int old_t;
+
 
 // Drawing axes X and Y (north, south, east, west)
 void drawLines() {
@@ -78,7 +80,8 @@ void Draw() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
 
-    glRotatef(d_elev, 1, 0, 0); // point of view
+    glRotatef(d_elev, 1, 0, 0); // point of view elevation
+    glRotatef(d_hor_view, 0, 0, 1); // point of view horizontal
 
     drawLines();
     drawCircles();
@@ -107,6 +110,16 @@ void SpecialKeys(int key, int x, int y) {
             if (d_elev < 90) {
                 d_elev += 0.5;
             }
+        }
+    }
+    if (key == GLUT_KEY_RIGHT) {///////////////////////////// לשאול את אלברט
+        if (d_hor_view < 90) {
+            d_hor_view += 5.0;
+        }
+    }
+    if (key == GLUT_KEY_LEFT) {
+        if (d_hor_view > -90) {
+            d_hor_view -= 5.0;
         }
     }
     glutPostRedisplay();
