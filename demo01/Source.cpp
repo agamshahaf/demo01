@@ -44,6 +44,23 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
     }
     glEnd();
 }
+void drawdiamond()
+{
+    glColor3f(1.0, 0.0, 0.0);
+
+    glBegin(GL_POLYGON);
+
+    for (float alfa = 0; alfa <= 2.0 * PI; alfa += PI / 3)
+    {
+        float r_ = 5;
+        glVertex3f(r_ * sin(alfa), r_ * cos(alfa), 30);//output vertex
+        glVertex3f(r_ * sin(alfa + PI / 3), r_ * cos(alfa + PI / 3), 30);
+        glVertex3f(0, 0, 40);
+    }
+
+
+    glEnd();
+}
 
 // Create all four circles using the DrawCircle function
 void drawCircles() {
@@ -85,6 +102,10 @@ void Draw() {
 
     drawLines();
     drawCircles();
+    glPushMatrix();
+    glTranslatef(20, 30, 0);
+    drawdiamond();
+    glPopMatrix();
     drawBeam();
 
     glutSwapBuffers();
@@ -98,7 +119,7 @@ void SpecialKeys(int key, int x, int y) {
         }
         else {
             if (d_elev > 78) {
-                d_elev -=0.5;
+                d_elev -= 0.5;
             }
         }
     }
@@ -112,7 +133,7 @@ void SpecialKeys(int key, int x, int y) {
             }
         }
     }
-    if (key == GLUT_KEY_RIGHT) {///////////////////////////// לשאול את אלברט
+    if (key == GLUT_KEY_RIGHT) {
         if (d_hor_view < 90) {
             d_hor_view += 5.0;
         }
