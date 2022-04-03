@@ -17,12 +17,21 @@ int old_t;
 // Drawing axes X and Y (north, south, east, west)
 void drawLines() {
     glLineWidth(3);
-    glColor3f(0.007843137254902, 0.6274509803921569, 0.7725490196078431);
+    //    glColor3f(0.007843137254902, 0.6274509803921569, 0.7725490196078431);
+    glColor3f(0.9, 0.3, 0.1);
     glBegin(GL_LINES);
     glVertex3f(R_MAX, 0, 0);
+    glVertex3f(0, 0, 0);
+    glEnd();
+    glColor3f(0.7, 0.7, 0.1);
+    glBegin(GL_LINES);
+    glVertex3f(0, 0, 0);
     glVertex3f(-R_MAX, 0, 0);
     glVertex3f(0, R_MAX, 0);
     glVertex3f(0, -R_MAX, 0);
+    glEnd();
+    glColor3f(0.0, 0.5, 0.9);
+    glBegin(GL_LINES);
     glVertex3f(0, 0, H_MAX);
     glVertex3f(0, 0, 0);
     glEnd();
@@ -44,6 +53,21 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
     }
     glEnd();
 }
+
+// Create and show one target function
+void drawTarget() {
+    glPushMatrix();
+    float x = -200.0 + 1 * t;
+    float y = 50;
+    float z = 10;
+    if (pow(powf(x, 2.0) + powf(y, 2.0), 0.5) < 200) {
+        glTranslatef(x, y, z);
+        glColor3f(1.0, 0.0, 0.0);
+        glutSolidSphere(2, 4, 2);
+    }
+    glPopMatrix();
+}
+
 void drawdiamond()
 {
     glColor3f(1.0, 0.0, 0.0);
@@ -102,11 +126,12 @@ void Draw() {
 
     drawLines();
     drawCircles();
-    glPushMatrix();
-    glTranslatef(20, 30, 0);
-    drawdiamond();
-    glPopMatrix();
     drawBeam();
+    //glPushMatrix();
+    //glTranslatef(20, 30, 0);
+    //drawdiamond();
+    //glPopMatrix();
+    drawTarget();
 
     glutSwapBuffers();
     glFlush();
@@ -174,7 +199,7 @@ void Initialize() {
 
 int main(int iArgc, char** cppArgv) {
     glutInit(&iArgc, cppArgv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); 
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(20, 20);
     glutCreateWindow("Agam");
