@@ -6,12 +6,16 @@
 
 float PI = 3.1415926535897932384626433832795;
 float R_MAX = 200; // The longest radius
-float H_MAX = 50; // The height
+float H_MAX = 15; // The height
 float T_SCAN = 4; // The time it takes for one scan (seconds)
 int t = 0; // The t of idle
 float d_elev = 0; // elev view angle
 float d_hor_view = 0; // horizontal view angle
 int old_t;
+int rtc;
+// for singel target
+int t1_t0 = glutGet(GLUT_ELAPSED_TIME);
+float t1_x, t1_y, t1_z;
 
 
 // Drawing axes X and Y (north, south, east, west)
@@ -57,11 +61,18 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
 // Create and show one target function
 void drawTarget() {
     glPushMatrix();
-    float x = -200.0 + 1 * t;
-    float y = 50;
-    float z = 10;
-    if (pow(powf(x, 2.0) + powf(y, 2.0), 0.5) < 200) {
-        glTranslatef(x, y, z);
+    float speed = 600;  //knots
+    float direction = 0;//compass
+    float x0 = -100;    //absolute
+    float y0 = 50;      //absolute
+    float z0 = 60000;   // feet
+    float angle = PI * float(-direction) / 180.0;
+    float target1_rate = speed / 3600000;
+    t1_x = x0 + (target1_rate * cosf(angle)) * (rtc - t1_t0);
+    t1_y = y0 + (target1_rate * sinf(angle)) * (rtc - t1_t0);
+    t1_z = z0 * 0.000164579;
+    if (pow(powf(t1_x, 2.0) + powf(t1_y, 2.0), 0.5) < 200) {
+        glTranslatef(t1_x, t1_y, t1_z);
         glColor3f(1.0, 0.0, 0.0);
         glutSolidSphere(2, 4, 2);
     }
@@ -114,6 +125,9 @@ void drawBeam() {
     float x = R * cosf(theta);//calculate the x component
     float y = R * sinf(theta);//calculate the y component
     glVertex3f(x, y, z);
+    // find the eq from 0,0,0, to x,y,z
+    // find distance between line and t1_x,t1_y,t1_z
+    // if distance < Const - write to console
     glEnd();
 }
 
@@ -137,6 +151,15 @@ void Draw() {
     glFlush();
 }
 
+void Draw_1() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    glTranslatef(50, 100, 0);
+    glutSolidCube(50);
+
+    glutSwapBuffers();
+    glFlush();
+}
 void SpecialKeys(int key, int x, int y) {
     if (key == GLUT_KEY_UP) {
         if (d_elev == 78) {
@@ -184,6 +207,7 @@ void idle() {
         t += 1;
     else
         t = 0;
+    rtc = glutGet(GLUT_ELAPSED_TIME);
     glutPostRedisplay();
 }
 
@@ -196,21 +220,42 @@ void Initialize() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
+void Initialize_1() {
+    old_t = glutGet(GLUT_ELAPSED_TIME);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(250.0, 0.0, 250.0, 0.0, 250.0, -250.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
 
 int main(int iArgc, char** cppArgv) {
     glutInit(&iArgc, cppArgv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+
+    //
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(20, 20);
     glutCreateWindow("Agam");
     Initialize();
     glutDisplayFunc(Draw);
     glutIdleFunc(idle);
-    //    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
     glutSpecialFunc(SpecialKeys);
-
+    //
+    glutInitWindowSize(200, 500);
+    glutInitWindowPosition(600, 20);
+    glutCreateWindow("ttt");
+    Initialize_1();
+    glutDisplayFunc(Draw_1);
+    glutIdleFunc(idle);
+    //glEnable(GL_DEPTH_TEST);
+    glutSpecialFunc(SpecialKeys);
     glClear(GL_COLOR_BUFFER_BIT);
-
     glutMainLoop();
     //    return 0;
 }
+
+
+
