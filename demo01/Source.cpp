@@ -3,6 +3,8 @@
 #include <GLUT.h>
 #include <stdio.h>
 #include <math.h>
+#include <iostream>
+
 
 float PI = 3.1415926535897932384626433832795;
 float R_MAX = 200; // The longest radius
@@ -15,7 +17,9 @@ int old_t;
 int rtc;
 // for singel target
 int t1_t0 = glutGet(GLUT_ELAPSED_TIME);
+float beem_x, beem_y, beem_z;
 float t1_x, t1_y, t1_z;
+bool targetExist = true;
 
 
 // Drawing axes X and Y (north, south, east, west)
@@ -114,17 +118,17 @@ void drawBeam() {
     int e_angle = t % 10; // elevation
     int h_angle = t / 10; // horizontal
     float alpha = (1 + e_angle) * 0.04f * PI;
-    float z = R_MAX * sinf(alpha);
+    beem_z = R_MAX * sinf(alpha);
     float R = R_MAX * cosf(alpha);
-    if (z > H_MAX) {
+    if (beem_z > H_MAX) {
         float r = R * sinf(alpha) / cosf(alpha);
-        z = H_MAX;
+        beem_z = H_MAX;
     }
     // R_effective
     float theta = 2.0f * PI * float(h_angle) / float(10 * T_SCAN);//get the current angle
-    float x = R * cosf(theta);//calculate the x component
-    float y = R * sinf(theta);//calculate the y component
-    glVertex3f(x, y, z);
+    beem_x = R * cosf(theta);//calculate the x component
+    beem_y = R * sinf(theta);//calculate the y component
+    glVertex3f(beem_x, beem_y, beem_z);
     // find the eq from 0,0,0, to x,y,z
     // find distance between line and t1_x,t1_y,t1_z
     // if distance < Const - write to console
@@ -145,21 +149,14 @@ void Draw() {
     //glTranslatef(20, 30, 0);
     //drawdiamond();
     //glPopMatrix();
-    drawTarget();
+    if (targetExist) {
+        drawTarget();
+    }
 
     glutSwapBuffers();
     glFlush();
 }
 
-void Draw_1() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-    glTranslatef(50, 100, 0);
-    glutSolidCube(50);
-
-    glutSwapBuffers();
-    glFlush();
-}
 void SpecialKeys(int key, int x, int y) {
     if (key == GLUT_KEY_UP) {
         if (d_elev == 78) {
@@ -191,6 +188,19 @@ void SpecialKeys(int key, int x, int y) {
             d_hor_view -= 5.0;
         }
     }
+    if (key == GLUT_KEY_F1) {
+        //int i;
+        //std::cout << "Please enter an integer value: ";
+        //std::cin >> i;
+        //printf("\n the number entered =%d ", i);
+        printf("target on ! \n");
+        targetExist = true;
+    }
+    if (key == GLUT_KEY_F2) {
+        printf("target off ! \n");
+        targetExist = false;
+    }
+
     glutPostRedisplay();
 }
 
@@ -200,7 +210,7 @@ void idle() {
     while (dt < 10) {
         new_t = glutGet(GLUT_ELAPSED_TIME);
         dt = (new_t - old_t);
-        //        printf("new_t =%d \n", new_t);
+        //printf("new_t =%d \n", new_t);
     }
     old_t = new_t;
     if (t < 100 * T_SCAN)
@@ -220,42 +230,21 @@ void Initialize() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
-void Initialize_1() {
-    old_t = glutGet(GLUT_ELAPSED_TIME);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(250.0, 0.0, 250.0, 0.0, 250.0, -250.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
 
 int main(int iArgc, char** cppArgv) {
     glutInit(&iArgc, cppArgv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-
-    //
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(20, 20);
     glutCreateWindow("Agam");
     Initialize();
     glutDisplayFunc(Draw);
     glutIdleFunc(idle);
-    //glEnable(GL_DEPTH_TEST);
+    //    glEnable(GL_DEPTH_TEST);
     glutSpecialFunc(SpecialKeys);
-    //
-    glutInitWindowSize(200, 500);
-    glutInitWindowPosition(600, 20);
-    glutCreateWindow("ttt");
-    Initialize_1();
-    glutDisplayFunc(Draw_1);
-    glutIdleFunc(idle);
-    //glEnable(GL_DEPTH_TEST);
-    glutSpecialFunc(SpecialKeys);
+
     glClear(GL_COLOR_BUFFER_BIT);
+
     glutMainLoop();
     //    return 0;
 }
-
-
-
