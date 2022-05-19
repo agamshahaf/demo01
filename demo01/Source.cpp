@@ -19,13 +19,17 @@ int rtc;
 int t1_t0 = glutGet(GLUT_ELAPSED_TIME);
 float beem_x, beem_y, beem_z;
 float t1_x, t1_y, t1_z;
-bool targetExist = true;
+bool targetExist = false;
+
+float speed;    //knots
+float direction;//compass
+float x_0, y_0; //absolute
+float z_0;      // feet
 
 
 // Drawing axes X and Y (north, south, east, west)
 void drawLines() {
     glLineWidth(3);
-    //    glColor3f(0.007843137254902, 0.6274509803921569, 0.7725490196078431);
     glColor3f(0.9, 0.3, 0.1);
     glBegin(GL_LINES);
     glVertex3f(R_MAX, 0, 0);
@@ -65,16 +69,11 @@ void DrawCircle(float cx, float cy, float r, int num_segments)
 // Create and show one target function
 void drawTarget() {
     glPushMatrix();
-    float speed = 600;  //knots
-    float direction = 0;//compass
-    float x0 = -100;    //absolute
-    float y0 = 50;      //absolute
-    float z0 = 60000;   // feet
     float angle = PI * float(-direction) / 180.0;
     float target1_rate = speed / 3600000;
-    t1_x = x0 + (target1_rate * cosf(angle)) * (rtc - t1_t0);
-    t1_y = y0 + (target1_rate * sinf(angle)) * (rtc - t1_t0);
-    t1_z = z0 * 0.000164579;
+    t1_x = x_0 + (target1_rate * cosf(angle)) * (rtc - t1_t0);
+    t1_y = y_0 + (target1_rate * sinf(angle)) * (rtc - t1_t0);
+    t1_z = z_0 * 0.000164579;
     if (pow(powf(t1_x, 2.0) + powf(t1_y, 2.0), 0.5) < 200) {
         glTranslatef(t1_x, t1_y, t1_z);
         glColor3f(1.0, 0.0, 0.0);
@@ -129,6 +128,7 @@ void drawBeam() {
     beem_x = R * cosf(theta);//calculate the x component
     beem_y = R * sinf(theta);//calculate the y component
     glVertex3f(beem_x, beem_y, beem_z);
+    
     // find the eq from 0,0,0, to x,y,z
     // find distance between line and t1_x,t1_y,t1_z
     // if distance < Const - write to console
@@ -145,10 +145,6 @@ void Draw() {
     drawLines();
     drawCircles();
     drawBeam();
-    //glPushMatrix();
-    //glTranslatef(20, 30, 0);
-    //drawdiamond();
-    //glPopMatrix();
     if (targetExist) {
         drawTarget();
     }
@@ -189,10 +185,16 @@ void SpecialKeys(int key, int x, int y) {
         }
     }
     if (key == GLUT_KEY_F1) {
-        //int i;
-        //std::cout << "Please enter an integer value: ";
-        //std::cin >> i;
-        //printf("\n the number entered =%d ", i);
+        std::cout << "Please enter object X position (-200:200): ";
+        std::cin >> x_0;
+        std::cout << "Please enter object Y position (-200:200): ";
+        std::cin >> y_0;
+        std::cout << "Please enter object altitude (0-60000 feet): ";
+        std::cin >> z_0;
+        std::cout << "Please enter object speed (0-600 knots): ";
+        std::cin >> speed;
+        std::cout << "Please enter object direction(0-359): ";
+        std::cin >> direction;
         printf("target on ! \n");
         targetExist = true;
     }
@@ -240,11 +242,9 @@ int main(int iArgc, char** cppArgv) {
     Initialize();
     glutDisplayFunc(Draw);
     glutIdleFunc(idle);
-    //    glEnable(GL_DEPTH_TEST);
     glutSpecialFunc(SpecialKeys);
 
     glClear(GL_COLOR_BUFFER_BIT);
 
     glutMainLoop();
-    //    return 0;
 }
